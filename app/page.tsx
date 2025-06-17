@@ -141,9 +141,10 @@ export default function FroggerGame() {
     const GOAL_Y = 50;
 
     // キャンバスサイズを調整
-    function resizeCanvas() {
-      const container = canvas.parentElement;
-      if (!container) return;
+function resizeCanvas() {
+  if (!canvas) return;
+  const container = canvas.parentElement;
+  if (!container) return;
       const containerWidth = container.clientWidth;
       const maxWidth = 800;
       const scale = Math.min(1, containerWidth / maxWidth);
