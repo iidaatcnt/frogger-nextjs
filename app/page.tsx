@@ -141,10 +141,10 @@ export default function FroggerGame() {
     const GOAL_Y = 50;
 
     // キャンバスサイズを調整
-function resizeCanvas() {
-  if (!canvas) return;
-  const container = canvas.parentElement;
-  if (!container) return;
+    function resizeCanvas() {
+      if (!canvas) return;
+      const container = canvas.parentElement;
+      if (!container) return;
       const containerWidth = container.clientWidth;
       const maxWidth = 800;
       const scale = Math.min(1, containerWidth / maxWidth);
@@ -155,6 +155,7 @@ function resizeCanvas() {
 
     // 障害物を作成
     function createObstacles() {
+      if (!canvas) return;
       cars = [];
       logs = [];
 
@@ -196,7 +197,7 @@ function resizeCanvas() {
 
     // 移動処理
     function handleMove(direction: string) {
-      if (gameState.gameOver || frog.isJumping) return;
+      if (!canvas || gameState.gameOver || frog.isJumping) return;
 
       const moveDistance = 50;
       let newX = frog.x;
@@ -231,6 +232,7 @@ function resizeCanvas() {
 
     // 描画関数たち
     function drawStars() {
+      if (!ctx) return;
       ctx.fillStyle = '#ffffff';
       const starPositions = [
         {x: 100, y: 20}, {x: 200, y: 35}, {x: 350, y: 15}, {x: 450, y: 40},
@@ -245,6 +247,7 @@ function resizeCanvas() {
     }
 
     function drawFlowers() {
+      if (!ctx) return;
       const flowerPositions = [
         {x: 80, y: 25, color: '#FF69B4'}, {x: 180, y: 30, color: '#FFB6C1'},
         {x: 280, y: 20, color: '#FFA07A'}, {x: 380, y: 35, color: '#FF69B4'},
@@ -272,6 +275,7 @@ function resizeCanvas() {
     }
 
     function drawGrass(startY: number, height: number) {
+      if (!ctx || !canvas) return;
       ctx.strokeStyle = '#4CAF50';
       ctx.lineWidth = 2;
       for (let x = 0; x < canvas.width; x += 10) {
@@ -283,6 +287,7 @@ function resizeCanvas() {
     }
 
     function drawCar(car: any) {
+      if (!ctx) return;
       // 車体
       ctx.fillStyle = car.color;
       ctx.fillRect(car.x, car.y, car.width, car.height);
@@ -312,6 +317,7 @@ function resizeCanvas() {
     }
 
     function drawLog(log: any) {
+      if (!ctx) return;
       // 丸太の影
       ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.fillRect(log.x + 2, log.y + 2, log.width, log.height);
@@ -353,6 +359,7 @@ function resizeCanvas() {
     }
 
     function drawFrog() {
+      if (!ctx) return;
       let drawX = frog.x;
       let drawY = frog.y;
       let scale = 1;
@@ -455,6 +462,7 @@ function resizeCanvas() {
 
     // 描画関数
     function draw() {
+      if (!ctx || !canvas) return;
       // 背景をクリア
       ctx.fillStyle = '#001122';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -536,7 +544,7 @@ function resizeCanvas() {
 
     // 更新関数
     function update() {
-      if (gameState.gameOver) return;
+      if (!canvas || gameState.gameOver) return;
 
       // カエルのジャンプアニメーション更新
       if (frog.isJumping) {
@@ -588,6 +596,7 @@ function resizeCanvas() {
     }
 
     function checkCollisions() {
+      if (!canvas) return;
       // 車との衝突
       if (frog.y >= ROAD_START && frog.y <= ROAD_END - frog.height) {
         cars.forEach(car => {
@@ -687,6 +696,24 @@ function resizeCanvas() {
       }
     };
 
+    // モバイルコントロールの設定
+    function setupMobileControls() {
+      const buttons = document.querySelectorAll('.control-btn');
+      buttons.forEach(button => {
+        const handleTouch = (e: Event) => {
+          e.preventDefault();
+          initAudio();
+          const direction = (button as HTMLElement).dataset.direction;
+          if (direction) {
+            handleMove(direction);
+          }
+        };
+
+        button.addEventListener('touchstart', handleTouch);
+        button.addEventListener('click', handleTouch);
+      });
+    }
+
     function restart() {
       setGameState({
         score: 0,
@@ -708,6 +735,7 @@ function resizeCanvas() {
     // 初期化
     resizeCanvas();
     createObstacles();
+    setupMobileControls();
     document.addEventListener('keydown', handleKeyDown);
     window.addEventListener('resize', resizeCanvas);
     gameLoop();
@@ -726,10 +754,6 @@ function resizeCanvas() {
       gameOver: false,
       level: 1
     });
-  };
-
-  const handleMobileControl = (direction: string) => {
-    // モバイルコントロールの処理は useEffect 内で実装
   };
 
   return (
