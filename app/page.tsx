@@ -167,7 +167,7 @@ export default function FroggerGame() {
 
         for (let i = 0; i < 3; i++) {
           cars.push({
-            x: direction > 0 ? -100 - i * 200 : canvas.width + i * 200,
+            x: direction > 0 ? -100 - i * 200 : canvas!.width + i * 200,
             y: y,
             width: 60,
             height: 30,
